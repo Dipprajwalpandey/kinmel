@@ -266,5 +266,5 @@ This project is intended for learning, portfolio, and demonstration purposes.
 
 \*\*Dipprajwal Pandey\*\*
 
-GitHub: \[github.com/Dipprajwal Pandey](https://github.com/Dipprajwal Pandey)
+GitHub: \[github.com/Dipprajwal Pandey]https://github.com/Dipprajwalpandey
 
