@@ -94,8 +94,6 @@ The project emphasizes production-quality UI/UX, reusable frontend components, a
 
 | Layer | Technology |
 
-|---|---|
-
 | Backend | Python, Django |
 
 | Frontend | HTML5, CSS3, Bootstrap 5, JavaScript, jQuery |
