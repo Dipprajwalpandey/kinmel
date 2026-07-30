@@ -148,7 +148,7 @@ requirements.txt
 
 ```bash
 
-git clone https://github.com/YOUR\_USERNAME/Kinmel.git
+git clone https://github.com/Dipprajwalpandey/kinmel.git
 
 cd Kinmel
 
@@ -264,7 +264,7 @@ This project is intended for learning, portfolio, and demonstration purposes.
 
 \## Author
 
-\*\*Deep Pandey\*\*
+\*\*Dipprajwal Pandey\*\*
 
-GitHub: \[github.com/YOUR\_USERNAME](https://github.com/YOUR\_USERNAME)
+GitHub: \[github.com/Dipprajwal Pandey](https://github.com/Dipprajwal Pandey)
 
