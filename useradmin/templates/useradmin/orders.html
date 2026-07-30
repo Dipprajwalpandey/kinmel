@@ -1,0 +1,50 @@
+{% extends 'useradmin/dashboard_base.html' %}
+{% block title %} Orders - Kinmel{% endblock %}
+{% block dash_content %}
+<div class="dash-header">
+    <h2 class="dash-title">Orders</h2>
+    <p class="dash-subtitle">All orders placed on your store, most recent first.</p>
+</div>
+
+<div class="dash-card">
+    <div class="dash-card-body" style="padding: 0;">
+        {% if orders %}
+        <div style="overflow-x: auto;">
+            <table class="table" style="margin-bottom: 0;">
+                <thead>
+                    <tr>
+                        <th style="padding: 1rem 1.4rem;">Order ID</th>
+                        <th style="padding: 1rem 1.4rem;">Customer</th>
+                        <th style="padding: 1rem 1.4rem;">Contact</th>
+                        <th style="padding: 1rem 1.4rem;">Location</th>
+                        <th style="padding: 1rem 1.4rem;">Amount</th>
+                        <th style="padding: 1rem 1.4rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td style="padding: 1rem 1.4rem;">#{{ order.order_id }}</td>
+                        <td style="padding: 1rem 1.4rem;">
+                            {{ order.name }}<br>
+                            <span style="font-size: 0.8rem; color: var(--muted);">{{ order.email }}</span>
+                        </td>
+                        <td style="padding: 1rem 1.4rem;">{{ order.phone }}</td>
+                        <td style="padding: 1rem 1.4rem;">{{ order.city }}, {{ order.state }}</td>
+                        <td style="padding: 1rem 1.4rem; font-weight: 600;">Rs. {{ order.amount }}</td>
+                        <td style="padding: 1rem 1.4rem;">
+                            <span class="badge badge-primary">{{ order.latest_status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding: 2.5rem 1rem; text-align: center; color: var(--muted);">
+            No orders have been placed yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

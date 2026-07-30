@@ -1,0 +1,7 @@
+<div class="text-center" style="padding: 3rem 1rem;">
+    <h5 style="font-weight: 600; margin-bottom: 0.4rem;">{{title}}</h5>
+    <p style="color: var(--muted); font-size: 0.9rem; max-width: 360px; margin: 0 auto 1.25rem;">{{message}}</p>
+    {% if action_url %}
+    <a href="{{action_url}}" class="btn btn-primary">{{action_label}}</a>
+    {% endif %}
+</div>

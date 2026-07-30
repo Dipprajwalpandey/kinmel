@@ -1,0 +1,238 @@
+{% extends 'useradmin/dashboard_base.html' %}
+{% block title %} Sales Reports - Kinmel{% endblock %}
+{% block dash_content %}
+<div class="dash-header">
+    <h2 class="dash-title">Sales reports</h2>
+    <p class="dash-subtitle">Track your monthly performance and growth trends.</p>
+</div>
+
+<!-- Stat cards -->
+<div class="row report-stats">
+    <div class="col-6 col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">Total revenue</div>
+            <div class="stat-value" id="statRevenue">Rs. 0</div>
+            <div class="stat-change positive" id="statRevenueChange">+0%</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">Orders</div>
+            <div class="stat-value" id="statOrders">0</div>
+            <div class="stat-change positive" id="statOrdersChange">+0%</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">Avg. order value</div>
+            <div class="stat-value" id="statAOV">Rs. 0</div>
+            <div class="stat-change positive" id="statAOVChange">+0%</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">New customers</div>
+            <div class="stat-value" id="statCustomers">0</div>
+            <div class="stat-change negative" id="statCustomersChange">+0%</div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly sales chart -->
+<div class="dash-card">
+    <div class="dash-card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h3>Monthly sales</h3>
+            <p>Revenue trend over the last 12 months</p>
+        </div>
+        <select class="form-control report-range-select" id="rangeSelect" style="width:auto;">
+            <option value="12">Last 12 months</option>
+            <option value="6">Last 6 months</option>
+            <option value="3">Last 3 months</option>
+        </select>
+    </div>
+    <div class="dash-card-body">
+        <div class="chart-wrap">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Category breakdown -->
+    <div class="col-md-6">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h3>Sales by category</h3>
+                <p>Share of revenue this month</p>
+            </div>
+            <div class="dash-card-body">
+                <div class="chart-wrap chart-wrap-donut">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Growth comparison -->
+    <div class="col-md-6">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h3>Growth vs last year</h3>
+                <p>Month-by-month comparison</p>
+            </div>
+            <div class="dash-card-body">
+                <div class="chart-wrap">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const monthlySales = {
+    labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    revenue: [1200, 1900, 1500, 2200, 3100, 2600, 2900, 3400, 3000, 3800, 4200, 4650],
+    lastYear: [900, 1400, 1200, 1700, 2400, 2000, 2200, 2600, 2300, 2900, 3200, 3500]
+};
+const categoryData = {
+    labels: ['Kitchen', 'Electronics', 'Home & Living', 'Fashion', 'Other'],
+    values: [38, 27, 18, 12, 5]
+};
+
+const totalRevenue = monthlySales.revenue.reduce((a, b) => a + b, 0);
+const prevTotal = monthlySales.lastYear.reduce((a, b) => a + b, 0);
+const growthPct = (((totalRevenue - prevTotal) / prevTotal) * 100).toFixed(1);
+
+document.getElementById('statRevenue').textContent = 'Rs. ' + totalRevenue.toLocaleString();
+document.getElementById('statRevenueChange').textContent = (growthPct >= 0 ? '+' : '') + growthPct + '%';
+document.getElementById('statOrders').textContent = '312';
+document.getElementById('statOrdersChange').textContent = '+8.4%';
+document.getElementById('statAOV').textContent = 'Rs. ' + Math.round(totalRevenue / 312);
+document.getElementById('statAOVChange').textContent = '+3.1%';
+document.getElementById('statCustomers').textContent = '54';
+document.getElementById('statCustomersChange').textContent = '-2.2%';
+document.getElementById('statCustomersChange').className = 'stat-change negative';
+
+const brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim();
+const brandDark = getComputedStyle(document.documentElement).getPropertyValue('--brand-dark').trim();
+const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+const line = getComputedStyle(document.documentElement).getPropertyValue('--line').trim();
+const muted = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim();
+
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = muted;
+
+const salesCtx = document.getElementById('salesChart').getContext('2d');
+const gradient = salesCtx.createLinearGradient(0, 0, 0, 260);
+gradient.addColorStop(0, 'rgba(31, 111, 92, 0.25)');
+gradient.addColorStop(1, 'rgba(31, 111, 92, 0)');
+
+let salesChart = new Chart(salesCtx, {
+    type: 'line',
+    data: {
+        labels: monthlySales.labels,
+        datasets: [{
+            label: 'Revenue',
+            data: monthlySales.revenue,
+            borderColor: brand,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.35,
+            pointRadius: 3,
+            pointBackgroundColor: brand,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            borderWidth: 2.5
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: brandDark,
+                padding: 10,
+                cornerRadius: 8,
+                callbacks: { label: (ctx) => 'Rs. ' + ctx.parsed.y.toLocaleString() }
+            }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: {
+                grid: { color: line },
+                ticks: { callback: (val) => 'Rs. ' + val.toLocaleString() }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+        labels: categoryData.labels,
+        datasets: [{
+            data: categoryData.values,
+            backgroundColor: [brand, accent, '#5a9c89', '#e8b568', '#c9c3b3'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { boxWidth: 10, padding: 14, font: { size: 12 } }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('growthChart'), {
+    type: 'bar',
+    data: {
+        labels: monthlySales.labels,
+        datasets: [
+            {
+                label: 'This year',
+                data: monthlySales.revenue,
+                backgroundColor: brand,
+                borderRadius: 4,
+                maxBarThickness: 14
+            },
+            {
+                label: 'Last year',
+                data: monthlySales.lastYear,
+                backgroundColor: line,
+                borderRadius: 4,
+                maxBarThickness: 14
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14, font: { size: 12 } } }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: line }, ticks: { callback: (val) => 'Rs. ' + val.toLocaleString() } }
+        }
+    }
+});
+
+document.getElementById('rangeSelect').addEventListener('change', function() {
+    const months = parseInt(this.value);
+    salesChart.data.labels = monthlySales.labels.slice(-months);
+    salesChart.data.datasets[0].data = monthlySales.revenue.slice(-months);
+    salesChart.update();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends 'store/basic.html' %}
+{% block title%} Track Your Order - Kinmel{% endblock %}
+
+{% block css %}
+.tracker-timeline {
+    position: relative;
+    padding-left: 30px;
+    margin: 0;
+    list-style: none;
+}
+.tracker-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 7px;
+    width: 2px;
+    background: #e9ecef;
+}
+.tracker-timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+.tracker-timeline-item:last-child {
+    margin-bottom: 0;
+}
+.tracker-dot {
+    position: absolute;
+    left: -30px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #dee2e6;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #dee2e6;
+    z-index: 1;
+}
+.tracker-timeline-item.latest .tracker-dot {
+    background: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary);
+}
+.tracker-timeline-text {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 4px;
+}
+.tracker-timeline-time {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+.tracker-error {
+    color: #dc3545;
+    background: #fff5f5;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
+}
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-2 rounded-pill fw-bold">Order Tracking</span>
+        <h2 class="display-5 fw-bold mb-3">Track Your Order</h2>
+        <p class="lead text-muted mx-auto" style="max-width: 600px;">Enter your Order ID and the email you used at checkout to see the latest status.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-body p-4 p-md-5">
+            <form method="post" action="#" id="trackerForm">
+                {% csrf_token %}
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label for="orderId" class="form-label fw-semibold">Order ID</label>
+                        <input type="text" class="form-control bg-light border-0 py-3 px-4" id="orderId" name="orderId" placeholder="e.g. 42" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="email" class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control bg-light border-0 py-3 px-4" id="email" name="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-bold text-white rounded-3 shadow-sm tracker-submit">
+                            <span id="trackBtnText">Track Order</span>
+                            <span id="trackBtnSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="fa-solid fa-timeline text-primary me-3"></i> Order Status
+                    </h4>
+                    <ul class="tracker-timeline" id="items">
+                        <li class="text-muted fst-italic">Enter your Order ID and email above to see status updates here.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="fa-solid fa-box-open text-primary me-3"></i> Order Details
+                    </h4>
+                    <ul class="list-group list-group-flush" id="citems">
+                        <li class="list-group-item text-muted fst-italic border-0 px-0">Your ordered items will appear here once found.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$('#trackerForm').submit(function(event) {
+    event.preventDefault();
+
+    $('#trackBtnText').hide();
+    $('#trackBtnSpinner').show();
+
+    $('#items').empty();
+    $('#citems').empty();
+
+    var formData = {
+        'orderId': $('input[name=orderId]').val(),
+        'email': $('input[name=email]').val(),
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+
+    $.ajax({
+            type: 'POST',
+            url: '/store/tracker/',
+            data: formData,
+            encode: true
+        })
+        .done(function(data) {
+            $('#trackBtnText').show();
+            $('#trackBtnSpinner').hide();
+
+            data = JSON.parse(data);
+            if (data['status'] == 'success') {
+                updates = data['updates'];
+                for (i = 0; i < updates.length; i++) {
+                    let text = updates[i]['text'];
+                    let time = updates[i]['time'];
+                    let isLatest = (i == updates.length - 1) ? 'latest' : '';
+                    let mystr = `<li class="tracker-timeline-item ${isLatest}">
+                        <span class="tracker-dot"></span>
+                        <div class="tracker-timeline-body">
+                            <div class="tracker-timeline-text">${text}</div>
+                            <div class="tracker-timeline-time"><i class="fa-regular fa-clock me-1"></i> ${time}</div>
+                        </div>
+                    </li>`;
+                    $('#items').append(mystr);
+                }
+
+                cart = JSON.parse(data['itemsJson']);
+                for (item in cart) {
+                    let name = cart[item][1];
+                    let qty = cart[item][0];
+                    let mystr = `<li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-bottom">
+                        <span class="fw-semibold">${name}</span>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 border border-primary-subtle">Qty: ${qty}</span>
+                    </li>`;
+                    $('#citems').append(mystr);
+                }
+            } else {
+                let mystr = `<li class="tracker-error">
+                    <strong>Oops!</strong> We couldn't find an order matching that Order ID and email. Double check both and try again.</li>`;
+                $('#items').append(mystr);
+                $('#citems').append(`<li class="text-muted fst-italic">No items to display.</li>`);
+            }
+        })
+        .fail(function() {
+            $('#trackBtnText').show();
+            $('#trackBtnSpinner').hide();
+            $('#items').append(`<li class="tracker-error">Network error. Please try again.</li>`);
+        });
+});
+</script>
+{% endblock %}

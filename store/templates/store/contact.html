@@ -1,0 +1,158 @@
+{% extends 'store/basic.html' %}
+{% block title %} Contact Us - Kinmel{% endblock %}
+{% block body %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-2 rounded-pill fw-bold">Get in touch</span>
+        <h2 class="display-5 fw-bold mb-3">Contact Us</h2>
+        <p class="lead text-muted mx-auto" style="max-width: 600px;">Questions about an order, a product, or anything else? Send us a message and we'll get back to you within 24 hours.</p>
+    </div>
+
+    <div class="row g-5">
+        <!-- Left: Contact info -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Address</h6>
+                            <p class="text-muted mb-0">Kathmandu, Nepal</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Email</h6>
+                            <p class="text-muted mb-0">support@kinmel.com</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start mb-5">
+                        <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Hours</h6>
+                            <p class="text-muted mb-0">Sun–Fri, 10am – 6pm</p>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4">
+                    
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-light rounded-circle text-muted d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-light rounded-circle text-muted d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="btn btn-light rounded-circle text-muted d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <div id="contact-success" class="text-center py-5" style="display:none;">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-4" style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <h3 class="fw-bold">Message sent!</h3>
+                        <p class="text-muted">Thanks for reaching out — we'll reply to your email shortly.</p>
+                    </div>
+
+                    <form method="post" action="/store/contact/" id="contactForm" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-light border-0 py-2" id="name" name="name" placeholder="Enter your name" required>
+                                <div class="invalid-feedback" id="err-name">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control bg-light border-0 py-2" id="email" name="email" placeholder="you@example.com" required>
+                                <div class="invalid-feedback" id="err-email">Please enter a valid email.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-semibold">Phone</label>
+                                <input type="tel" class="form-control bg-light border-0 py-2" id="phone" name="phone" placeholder="Enter your phone number">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="subject" class="form-label fw-semibold">Subject</label>
+                                <select class="form-select bg-light border-0 py-2" id="subject" name="subject">
+                                    <option value="general">General inquiry</option>
+                                    <option value="order">Order issue</option>
+                                    <option value="returns">Returns & refunds</option>
+                                    <option value="partnership">Partnership</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label fw-semibold">How may we help you? <span class="text-danger">*</span></label>
+                                <textarea class="form-control bg-light border-0 py-2" id="desc" name="desc" rows="5" maxlength="500" placeholder="Tell us a bit about your question or issue..." required></textarea>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <div class="invalid-feedback d-block m-0" id="err-message" style="display:none !important;">Please enter a message.</div>
+                                    <div class="small text-muted ms-auto"><span id="charCount">0</span>/500</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom btn-lg w-100 rounded-pill fw-bold text-white shadow-sm" id="contactSubmit">
+                            <span id="submitText">Send Message <i class="fa-regular fa-paper-plane ms-2"></i></span>
+                            <span id="submitSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+                        </button>
+                        
+                        {% if thank %}
+                        <div class="alert alert-success mt-4 mb-0 rounded-3 text-center border-0 fw-semibold">
+                            Thanks for contacting us. We will get back to you soon.
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+const msgEl = document.getElementById('desc');
+const charCount = document.getElementById('charCount');
+if(msgEl) {
+    msgEl.addEventListener('input', function() {
+        charCount.textContent = msgEl.value.length;
+    });
+}
+// Note: Form submission is handled normally by Django because of the backend logic returning {thank: True}
+// But if you prefer JS validation before submit:
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    const name = document.getElementById('name');
+    const email = document.getElementById('email');
+    const message = document.getElementById('desc');
+    let valid = true;
+
+    if (!name.value.trim()) { document.getElementById('err-name').style.display = 'block'; name.classList.add('is-invalid'); valid = false; }
+    else { document.getElementById('err-name').style.display = 'none'; name.classList.remove('is-invalid'); }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value.trim())) { document.getElementById('err-email').style.display = 'block'; email.classList.add('is-invalid'); valid = false; }
+    else { document.getElementById('err-email').style.display = 'none'; email.classList.remove('is-invalid'); }
+
+    if (!message.value.trim()) { document.getElementById('err-message').style.display = 'block'; message.classList.add('is-invalid'); valid = false; }
+    else { document.getElementById('err-message').style.display = 'none'; message.classList.remove('is-invalid'); }
+
+    if (!valid) {
+        e.preventDefault();
+        return;
+    }
+    document.getElementById('submitText').style.display = 'none';
+    document.getElementById('submitSpinner').style.display = 'inline-block';
+    document.getElementById('contactSubmit').disabled = true;
+});
+</script>
+{% endblock %}

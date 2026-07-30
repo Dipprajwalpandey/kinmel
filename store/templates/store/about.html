@@ -1,0 +1,66 @@
+{% extends 'store/basic.html' %}
+{% block title %} About Us - Kinmel{% endblock %}
+
+{% block body %}
+<main role="main">
+  <!-- Hero Section -->
+  <div class="about-hero border-bottom">
+    <div class="container py-5 text-center">
+      <h1 class="about-hero-title about-fade-up about-delay-1">Welcome to Kinmel</h1>
+      <p class="about-hero-lead about-fade-up about-delay-2 mx-auto" style="max-width: 800px;">
+        Kinmel Pvt. Ltd. is a Nepali e-commerce company based in Kathmandu, Nepal.
+        Founded in 2023, the company started with a focus on affordable electronics before
+        expanding into fashion, lifestyle, and home essentials.
+      </p>
+      <p class="about-hero-sub about-fade-up about-delay-3 mx-auto mb-4" style="max-width: 800px;">
+        Kinmel aims to make online shopping simple and accessible for customers
+        across Nepal, offering a wide range of products with reliable delivery and
+        customer-friendly service. The platform continues to grow its catalog,
+        partnering with local and international sellers to bring quality products
+        at competitive prices to shoppers nationwide.
+      </p>
+      <a class="btn btn-primary-custom btn-lg rounded-pill px-5 shadow-sm fw-bold text-white mt-2 about-fade-up about-delay-4" href="{% url 'StoreHome' %}" role="button">
+        Start Shopping <i class="fa-solid fa-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="container pb-5">
+    <!-- Value Propositions -->
+    <div class="row g-4 about-value-row">
+      <div class="col-md-4">
+        <div class="about-card about-fade-up about-delay-1">
+          <div class="about-card-icon about-card-icon-brand">
+            <i class="fa-solid fa-truck-fast"></i>
+          </div>
+          <h3 class="about-card-title">Fast &amp; Reliable Delivery</h3>
+          <p class="about-card-text">We partner with trusted courier services across Nepal to make sure your orders reach you quickly and safely, whether you're in Kathmandu or a district far outside the valley. Every order is tracked from the moment it's placed until it's in your hands.</p>
+          <a class="about-card-link" href="{% url 'TrackingStatus' %}">Track your order <i class="fa-solid fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="about-card about-fade-up about-delay-2">
+          <div class="about-card-icon about-card-icon-accent">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="about-card-title">Secure Payments</h3>
+          <p class="about-card-text">Shop with confidence using eSewa, Nepal's most trusted digital payment gateway. Every transaction is encrypted and verified, so your money and personal information stay protected from checkout to delivery.</p>
+          <a class="about-card-link" href="{% url 'StoreHome' %}">Shop securely <i class="fa-solid fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="about-card about-fade-up about-delay-3">
+          <div class="about-card-icon about-card-icon-accent-alt">
+            <i class="fa-solid fa-medal"></i>
+          </div>
+          <h3 class="about-card-title">Quality Guaranteed</h3>
+          <p class="about-card-text">Every product on Kinmel is sourced from vetted local and international sellers. We stand behind what we sell, and our support team is always ready to help if something isn't right with your order.</p>
+          <a class="about-card-link" href="{% url 'ContactUs' %}">Contact support <i class="fa-solid fa-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

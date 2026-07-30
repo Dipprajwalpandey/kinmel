@@ -1,0 +1,36 @@
+{% extends 'store/basic.html' %}
+
+{% block title %}Shop by Brand - Kinmel{% endblock %}
+
+{% block body %}
+<div class="container my-5 pt-3">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark display-5 mb-3" style="letter-spacing: -1px;">Premium Brands</h2>
+        <p class="text-muted fs-5">Shop curated collections from the world's top manufacturers.</p>
+    </div>
+
+    <!-- Brands Content -->
+    {% if brands_data %}
+        {% for brand, products in brands_data.items %}
+        <div class="mb-5 pb-4">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <h3 class="fw-bold text-dark mb-0">{{ brand }}</h3>
+                <a href="#" class="btn btn-outline-minimal rounded-pill btn-sm">View All {{ brand }}</a>
+            </div>
+            
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                {% for item in products %}
+                    {% include 'store/partials/product_card.html' with product=item %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5 bg-light rounded-4 mb-5">
+            <i class="fa-regular fa-copyright fs-1 text-muted opacity-25 mb-3"></i>
+            <h5 class="fw-bold text-dark">No brands available</h5>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

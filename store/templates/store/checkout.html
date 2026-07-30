@@ -1,0 +1,685 @@
+{% extends 'store/basic.html' %}
+{% load static %}
+{% block title%} Checkout - Kinmel{% endblock %}
+
+{% block css %}
+.checkout-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+.checkout-stepper-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #9ca3af;
+}
+.checkout-stepper-step.active, .checkout-stepper-step.done {
+    color: var(--text-main);
+}
+.checkout-stepper-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+.checkout-stepper-step.active .checkout-stepper-circle {
+    background-color: var(--text-main);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+.checkout-stepper-step.done .checkout-stepper-circle {
+    background-color: var(--text-main);
+    color: white;
+}
+.checkout-stepper-line {
+    flex-grow: 1;
+    height: 2px;
+    background-color: #e5e7eb;
+    margin: 0 1rem 1.5rem;
+    max-width: 100px;
+}
+.checkout-stepper-line.done {
+    background-color: var(--text-main);
+}
+.ward-block {
+    display: none;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+}
+.ward-block.active {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+.ward-block-icon {
+    font-size: 24px;
+    color: var(--text-main);
+    margin-top: 5px;
+}
+.location-gps-note {
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+.location-gps-note.success { color: #10b981; }
+.location-gps-note.error { color: #ef4444; }
+.location-gps-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+.location-gps-divider::before, .location-gps-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #dee2e6;
+}
+.location-gps-divider::before { left: 0; }
+.location-gps-divider::after { right: 0; }
+{% endblock %}
+
+{% block body %}
+<div class="container my-5 pt-3">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold mb-4 text-dark display-6" style="letter-spacing: -1px;">Checkout securely</h2>
+        <div class="checkout-stepper">
+            <div class="checkout-stepper-step done">
+                <span class="checkout-stepper-circle"><i class="fa-solid fa-check"></i></span>
+                <span class="small fw-medium">Bag</span>
+            </div>
+            <div class="checkout-stepper-line done"></div>
+            <div class="checkout-stepper-step active">
+                <span class="checkout-stepper-circle">2</span>
+                <span class="small fw-medium">Details</span>
+            </div>
+            <div class="checkout-stepper-line"></div>
+            <div class="checkout-stepper-step">
+                <span class="checkout-stepper-circle">3</span>
+                <span class="small fw-medium">Payment</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Address form -->
+        <div class="col-lg-7">
+            <form method="post" action="{% url 'Checkout' %}" id="checkoutForm">{% csrf_token %}
+                <input type="hidden" name="itemsJson" id="itemsJson">
+                <input type="hidden" name="amount" id="amount">
+
+                <div class="card border border-light-subtle rounded-4 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                        <h5 class="fw-bold text-dark"><i class="fa-regular fa-address-book me-2"></i>Contact Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label small fw-medium text-muted">Full Name</label>
+                                <input type="text" class="form-control search-input-minimal py-2" id="name" name="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label small fw-medium text-muted">Email</label>
+                                <input type="email" class="form-control search-input-minimal py-2" id="email" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="phone" class="form-label small fw-medium text-muted">Phone Number</label>
+                                <input type="tel" class="form-control search-input-minimal py-2" id="phone" name="phone" placeholder="98XXXXXXXX" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border border-light-subtle rounded-4 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                        <h5 class="fw-bold text-dark"><i class="fa-solid fa-truck me-2"></i>Delivery Address</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        <!-- GPS location option -->
+                        <div class="mb-4" id="gpsPrompt">
+                            <button type="button" class="btn btn-outline-minimal w-100 rounded-pill fw-medium py-2" id="useLocationBtn">
+                                <i class="fa-solid fa-location-crosshairs me-2"></i> Use my current location
+                            </button>
+                            <p class="location-gps-note text-center" id="gpsStatus"></p>
+                        </div>
+                        <div class="location-gps-divider">or enter manually</div>
+
+                        <div class="mb-3">
+                            <label for="address1" class="form-label small fw-medium text-muted">Street address / Tole</label>
+                            <input type="text" class="form-control search-input-minimal py-2" id="address1" name="address1" placeholder="House no., street name, tole" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="address2" class="form-label small fw-medium text-muted">Apartment, floor, landmark <span class="text-secondary opacity-50">(optional)</span></label>
+                            <input type="text" class="form-control search-input-minimal py-2" id="address2" name="address2" placeholder="Apartment, studio, or floor">
+                        </div>
+
+                        <!-- Province / District / Municipality -->
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="province" class="form-label small fw-medium text-muted">Province</label>
+                                <select class="form-select search-input-minimal py-2" id="province" name="state" required>
+                                    <option value="" disabled selected>Select province</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="district" class="form-label small fw-medium text-muted">District</label>
+                                <select class="form-select search-input-minimal py-2" id="district" name="district_select" required disabled>
+                                    <option value="" disabled selected>Select province first</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="cityFieldWrap">
+                                <label for="cityArea" class="form-label small fw-medium text-muted">Municipality / Area</label>
+                                <select class="form-select search-input-minimal py-2" id="cityArea" name="city" required disabled>
+                                    <option value="" disabled selected>Select district first</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ward -->
+                        <div class="ward-block shadow-sm" id="wardBlock">
+                            <div class="ward-block-icon"><i class="fa-solid fa-house-flag"></i></div>
+                            <div class="w-100">
+                                <label for="wardNum" class="form-label fw-medium text-dark">Ward number</label>
+                                <input type="number" class="form-control search-input-minimal" id="wardNum" name="ward" min="1" max="33" placeholder="e.g. 5" required disabled>
+                                <p class="text-muted small mt-2 mb-0" id="wardHint">Select a municipality above to enter your ward number</p>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="gpsLat" name="gps_lat">
+                        <input type="hidden" id="gpsLng" name="gps_lng">
+
+                        <div class="mt-4">
+                            <label for="zip_code" class="form-label small fw-medium text-muted">Postal code <span class="text-secondary opacity-50">(optional)</span></label>
+                            <input type="text" class="form-control search-input-minimal py-2" id="zip_code" name="zip_code" style="max-width:200px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mt-5">
+                    <p class="text-muted small mb-0 w-50">
+                        <i class="fa-solid fa-lock text-success me-1"></i> Your information is secure and encrypted.
+                    </p>
+                    <button type="submit" class="btn btn-primary-custom btn-lg rounded-pill px-5 fw-medium shadow-sm checkout-place-order">
+                        Continue to Payment <i class="fa-solid fa-arrow-right ms-2 fs-6"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Order summary -->
+        <div class="col-lg-5">
+            <div class="card border border-light-subtle rounded-4 shadow-sm bg-light mb-4 sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                        <h5 class="fw-bold mb-0 text-dark">Order Summary</h5>
+                        <span class="badge bg-white text-dark border rounded-pill px-3 py-2 fw-medium">Kinmel</span>
+                    </div>
+
+                    <div class="table-responsive mb-3">
+                        <table class="table table-borderless table-light align-middle mb-0">
+                            <thead class="text-muted small text-uppercase" style="background-color: transparent;">
+                                <tr>
+                                    <th class="ps-0">Item</th>
+                                    <th>Price</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end pe-0">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="items" class="border-top"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between text-muted mb-2">
+                            <span>Subtotal</span>
+                            <span id="subtotalDisplay" class="fw-medium text-dark">Rs. 0</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted mb-3">
+                            <span>Delivery <br><small id="deliveryNote" class="text-dark opacity-75"></small></span>
+                            <span id="deliveryDisplay" class="fw-medium text-dark">Free</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-2">
+                            <span class="fs-5 fw-bold text-dark">Total</span>
+                            <span class="fs-4 fw-bold text-dark">Rs. <span id="totalPrice">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-secondary bg-white mt-4 mb-0 border text-center rounded-3 shadow-sm py-2">
+                        <i class="fa-solid fa-shield-halved me-2 text-dark"></i> <span class="small fw-medium text-dark">Pay securely with eSewa on the next step</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="{% static 'store/js/nepal_locations.js' %}"></script>
+<script>
+// ===== Store origin & pricing config =====
+// TODO: replace with your exact store coordinates (right-click your location on Google Maps to get these)
+var STORE_LAT = 27.6939;
+var STORE_LNG = 85.3346;
+var STORE_ORIGIN = "New Baneshwor, Kathmandu";
+var RATE_PER_KM = 25;
+
+// Flat delivery fee per tier (used when no GPS and municipality has no VALLEY_KM entry)
+var TIER_FEE = { 1: 75, 2: 100, 3: 150, 4: 250, 5: 400 };
+var TIER_LABEL = {
+    1: "valley rate", 2: "near-valley rate", 3: "Bagmati Province rate",
+    4: "outstation rate", 5: "remote-area rate"
+};
+
+var provinceSelect = document.getElementById('province');
+var districtSelect = document.getElementById('district');
+var citySelect = document.getElementById('cityArea'); // municipality select
+var wardInput = document.getElementById('wardNum');
+var wardHint = document.getElementById('wardHint');
+var useLocationBtn = document.getElementById('useLocationBtn');
+var gpsStatus = document.getElementById('gpsStatus');
+var gpsLatField = document.getElementById('gpsLat');
+var gpsLngField = document.getElementById('gpsLng');
+
+// window.gpsDistanceKm is set once GPS succeeds, and takes priority over manual dropdown pricing
+window.gpsDistanceKm = null;
+
+// Haversine formula — real straight-line distance between two lat/lng points, in km
+function haversineKm(lat1, lng1, lat2, lng2) {
+    function toRad(deg) { return deg * Math.PI / 180; }
+    var R = 6371; // Earth's radius in km
+    var dLat = toRad(lat2 - lat1);
+    var dLng = toRad(lng2 - lng1);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+// ===== Fuzzy text matching helpers for auto-selecting dropdowns from geocoded names =====
+function normalize(str) {
+    return (str || '').toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function findBestMatch(candidateNames, targetStrings) {
+    // candidateNames: array of real option labels (e.g. district names)
+    // targetStrings: array of raw strings from the geocoder to test against
+    for (var t = 0; t < targetStrings.length; t++) {
+        var target = normalize(targetStrings[t]);
+        if (!target) continue;
+        for (var c = 0; c < candidateNames.length; c++) {
+            var cand = normalize(candidateNames[c]);
+            if (!cand) continue;
+            if (cand === target || cand.indexOf(target) !== -1 || target.indexOf(cand) !== -1) {
+                return candidateNames[c];
+            }
+        }
+    }
+    return null;
+}
+
+function fireChange(el) {
+    var evt = document.createEvent('HTMLEvents');
+    evt.initEvent('change', true, true);
+    el.dispatchEvent(evt);
+}
+
+// Reverse-lookup: which province does a given district belong to?
+var DISTRICT_TO_PROVINCE = {};
+Object.keys(NEPAL_DATA).forEach(function(prov) {
+    NEPAL_DATA[prov].forEach(function(dist) {
+        DISTRICT_TO_PROVINCE[dist] = prov;
+    });
+});
+
+// Reverse geocode via OpenStreetMap Nominatim (free, no API key), then attempt to
+// auto-select Province/District/Municipality/Ward from the returned address parts.
+// Nominatim's Nepal data is inconsistent about the "state" (province) field, so we
+// match the DISTRICT first from whatever fields are available, then derive the
+// province from our own dataset rather than trusting Nominatim's province naming.
+function reverseGeocode(lat, lng) {
+    var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1';
+
+    fetch(url, { headers: { 'Accept-Language': 'en' } })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var addr = data.address || {};
+            var filledParts = [];
+            var needsReview = [];
+
+            console.log('Nominatim address data:', addr); // helpful for debugging what fields Nepal actually returns
+
+            // 1) Street address text field
+            var streetParts = [addr.road, addr.suburb || addr.neighbourhood, addr.city_district].filter(Boolean);
+            var streetGuess = streetParts.join(', ');
+            if (streetGuess) {
+                document.getElementById('address1').value = streetGuess;
+                filledParts.push('street');
+            }
+
+            // 2) District — search across ALL districts first (don't depend on province matching)
+            var allDistricts = Object.keys(DISTRICT_TO_PROVINCE);
+            var districtCandidates = [addr.county, addr.state_district, addr.city, addr.town, addr.state, addr.region, addr.suburb, addr.neighbourhood].filter(Boolean);
+            var districtMatch = findBestMatch(allDistricts, districtCandidates);
+
+            if (districtMatch) {
+                var provinceMatch = DISTRICT_TO_PROVINCE[districtMatch];
+
+                provinceSelect.value = provinceMatch;
+                fireChange(provinceSelect);
+                filledParts.push('province');
+
+                districtSelect.value = districtMatch;
+                fireChange(districtSelect);
+                filledParts.push('district');
+
+                // 3) Municipality (needs district's municipality list, now populated)
+                var muniCandidates = (MUNICIPALITIES[districtMatch] || []).map(function(m) { return m[0]; });
+                var muniMatch = findBestMatch(muniCandidates, [addr.city, addr.town, addr.village, addr.suburb, addr.neighbourhood, addr.city_district]);
+                if (muniMatch) {
+                    citySelect.value = muniMatch;
+                    fireChange(citySelect);
+                    filledParts.push('municipality');
+
+                    // 4) Ward — look for a trailing "-NN" or "ward NN" pattern in likely fields
+                    var wardSources = [addr.suburb, addr.neighbourhood, addr.city_district, addr.road].filter(Boolean);
+                    var wardNum = null;
+                    for (var i = 0; i < wardSources.length; i++) {
+                        var m = wardSources[i].match(/ward\s*(?:no\.?)?\s*(\d{1,2})/i) || wardSources[i].match(/-(\d{1,2})\b/);
+                        if (m) { wardNum = parseInt(m[1]); break; }
+                    }
+                    if (wardNum && !wardInput.disabled) {
+                        wardInput.value = wardNum;
+                        updateDeliveryCharge();
+                        filledParts.push('ward');
+                    } else {
+                        needsReview.push('ward number');
+                    }
+                } else {
+                    needsReview.push('municipality');
+                }
+            } else {
+                needsReview.push('province, district, and municipality');
+            }
+
+            var msg = 'Location captured \u2014 ' + window.gpsDistanceKm + ' km from ' + STORE_ORIGIN + '. Delivery fee updated.';
+            if (filledParts.length) {
+                msg += ' Auto-filled: ' + filledParts.join(', ') + ' \u2014 please double-check these.';
+            }
+            if (needsReview.length) {
+                msg += ' Could not confidently detect: ' + needsReview.join(', ') + ' \u2014 please select manually.';
+            }
+            gpsStatus.textContent = msg;
+            gpsStatus.className = 'location-gps-note success';
+        })
+        .catch(function() {
+            gpsStatus.textContent = 'Location captured \u2014 ' + window.gpsDistanceKm + ' km from ' + STORE_ORIGIN + '. Delivery fee updated. Please fill in your address below.';
+            gpsStatus.className = 'location-gps-note success';
+        });
+}
+
+useLocationBtn.addEventListener('click', function() {
+    if (!navigator.geolocation) {
+        gpsStatus.textContent = "Your browser doesn't support location access. Please select your area manually below.";
+        gpsStatus.className = 'location-gps-note error';
+        return;
+    }
+
+    useLocationBtn.disabled = true;
+    useLocationBtn.textContent = 'Getting your location...';
+    gpsStatus.textContent = '';
+    gpsStatus.className = 'location-gps-note';
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            var distKm = haversineKm(STORE_LAT, STORE_LNG, lat, lng);
+            distKm = Math.round(distKm * 10) / 10;
+
+            window.gpsDistanceKm = distKm;
+            gpsLatField.value = lat;
+            gpsLngField.value = lng;
+
+            useLocationBtn.disabled = false;
+            useLocationBtn.textContent = '\u{1F4CD} Use my current location for accurate delivery pricing';
+            gpsStatus.textContent = 'Location captured \u2014 ' + distKm + ' km from ' + STORE_ORIGIN + '. Delivery fee updated below. Looking up your address...';
+            gpsStatus.className = 'location-gps-note success';
+
+            updateDeliveryCharge();
+            reverseGeocode(lat, lng);
+        },
+        function(error) {
+            useLocationBtn.disabled = false;
+            useLocationBtn.textContent = '\u{1F4CD} Use my current location for accurate delivery pricing';
+            var msg = 'Could not get your location. ';
+            if (error.code === error.PERMISSION_DENIED) {
+                msg += 'Location access was denied \u2014 please select your area manually below.';
+            } else {
+                msg += 'Please select your area manually below.';
+            }
+            gpsStatus.textContent = msg;
+            gpsStatus.className = 'location-gps-note error';
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+});
+
+Object.keys(NEPAL_DATA).forEach(function(prov) {
+    var opt = document.createElement('option');
+    opt.value = prov;
+    opt.textContent = prov;
+    provinceSelect.appendChild(opt);
+});
+
+provinceSelect.addEventListener('change', function() {
+    var selected = provinceSelect.value;
+    districtSelect.innerHTML = '';
+    districtSelect.disabled = false;
+
+    var placeholder = document.createElement('option');
+    placeholder.value = ''; placeholder.disabled = true; placeholder.selected = true;
+    placeholder.textContent = 'Select district';
+    districtSelect.appendChild(placeholder);
+
+    NEPAL_DATA[selected].forEach(function(district) {
+        var opt = document.createElement('option');
+        opt.value = district;
+        opt.textContent = district;
+        districtSelect.appendChild(opt);
+    });
+
+    resetMunicipalityField();
+});
+
+// Unified path: every district (valley or not) lists its REAL municipalities.
+// Valley municipalities additionally carry a base km + spread via VALLEY_KM, used as
+// a fallback ONLY when GPS distance isn't available; everyone else uses the district's
+// flat tier fee as fallback.
+districtSelect.addEventListener('change', function() {
+    var district = districtSelect.value;
+    var wrap = document.getElementById('cityFieldWrap');
+
+    var select = buildEmptySelect('Select municipality');
+    (MUNICIPALITIES[district] || []).forEach(function(m) {
+        var name = m[0];
+        var wards = m[1];
+        var opt = document.createElement('option');
+        opt.value = name;
+        opt.dataset.wards = wards;
+
+        var kmInfo = (VALLEY_KM[district] && VALLEY_KM[district][name]) ? VALLEY_KM[district][name] : null;
+        if (kmInfo) {
+            opt.dataset.kmBase = kmInfo.km;
+            opt.dataset.kmSpread = kmInfo.spread;
+            var minFee = Math.round(kmInfo.km * RATE_PER_KM);
+            var maxFee = Math.round((kmInfo.km + kmInfo.spread) * RATE_PER_KM);
+            opt.textContent = name + ' (' + wards + ' wards \u00b7 Rs. ' + minFee + '\u2013' + maxFee + ' by ward)';
+        } else {
+            opt.textContent = name + ' (' + wards + ' wards)';
+        }
+        select.appendChild(opt);
+    });
+    select.addEventListener('change', onMunicipalityPicked);
+    wrap.querySelector('#cityArea').replaceWith(select);
+    citySelect = select;
+    lockWardBlock('Select a municipality above to enter your ward number');
+
+    updateDeliveryCharge();
+});
+
+function onMunicipalityPicked() {
+    var opt = citySelect.options[citySelect.selectedIndex];
+    var maxWards = opt ? parseInt(opt.dataset.wards) : null;
+    if (maxWards) {
+        wardInput.disabled = false;
+        wardInput.max = maxWards;
+        wardInput.placeholder = '1\u2013' + maxWards;
+        wardInput.value = '';
+        wardHint.textContent = 'This municipality has ' + maxWards + ' wards \u2014 enter yours';
+        document.getElementById('wardBlock').classList.add('active');
+    } else {
+        lockWardBlock('Select a municipality above to enter your ward number');
+    }
+    updateDeliveryCharge();
+}
+
+wardInput.addEventListener('input', updateDeliveryCharge);
+
+function lockWardBlock(hintText) {
+    wardInput.disabled = true;
+    wardInput.value = '';
+    wardInput.removeAttribute('max');
+    wardInput.placeholder = 'e.g. 5';
+    wardHint.textContent = hintText;
+    document.getElementById('wardBlock').classList.remove('active');
+}
+
+function buildEmptySelect(placeholderText) {
+    var select = document.createElement('select');
+    select.className = 'form-control';
+    select.id = 'cityArea';
+    select.name = 'city';
+    select.required = true;
+    var ph = document.createElement('option');
+    ph.value = ''; ph.disabled = true; ph.selected = true;
+    ph.textContent = placeholderText;
+    select.appendChild(ph);
+    return select;
+}
+
+function resetMunicipalityField() {
+    var wrap = document.getElementById('cityFieldWrap');
+    var select = buildEmptySelect('Select district first');
+    select.disabled = true;
+    wrap.querySelector('#cityArea').replaceWith(select);
+    citySelect = select;
+    lockWardBlock('Select a municipality above to enter your ward number');
+    updateDeliveryCharge();
+}
+
+function updateDeliveryCharge() {
+    var district = districtSelect.value;
+    var deliveryFee = 0;
+    var note = '';
+
+    // Priority 1: real GPS distance, if captured
+    if (window.gpsDistanceKm != null) {
+        deliveryFee = Math.round(window.gpsDistanceKm * RATE_PER_KM);
+        note = '(' + window.gpsDistanceKm + ' km \u2014 your device location)';
+    } else {
+        // Priority 2: manual dropdown estimate
+        var opt = citySelect.options[citySelect.selectedIndex];
+        var kmData = opt ? opt.dataset.kmBase : undefined;
+
+        if (kmData !== undefined) {
+            var baseKm = parseFloat(opt.dataset.kmBase);
+            var spread = parseFloat(opt.dataset.kmSpread) || 0;
+            var maxWards = parseInt(opt.dataset.wards) || 1;
+            var ward = parseInt(wardInput.value);
+
+            var effectiveKm = baseKm;
+            if (ward && maxWards > 1) {
+                var wardFraction = (ward - 1) / (maxWards - 1);
+                effectiveKm = baseKm + (wardFraction * spread);
+                effectiveKm = Math.round(effectiveKm * 10) / 10;
+            }
+
+            deliveryFee = Math.round(effectiveKm * RATE_PER_KM);
+            note = ward
+                ? '(~' + effectiveKm + ' km est. \u00b7 ward ' + ward + ')'
+                : '(~' + effectiveKm + ' km est. \u2014 enter ward, or use GPS above for exact rate)';
+        } else if (district) {
+            var tier = DISTRICT_TIER[district] || 4;
+            deliveryFee = TIER_FEE[tier];
+            note = '(' + TIER_LABEL[tier] + ')';
+        }
+    }
+
+    window.currentDeliveryFee = deliveryFee;
+    document.getElementById('deliveryDisplay').textContent = deliveryFee ? 'Rs. ' + deliveryFee : 'Free';
+    document.getElementById('deliveryNote').textContent = note;
+    recalcTotal();
+}
+
+function recalcTotal() {
+    document.getElementById('totalPrice').innerHTML = (window.cartSubtotal || 0) + (window.currentDeliveryFee || 0);
+}
+
+document.getElementById('checkoutForm').addEventListener('submit', function() {
+    document.getElementById('amount').value = (window.cartSubtotal || 0) + (window.currentDeliveryFee || 0);
+});
+
+// ===== Cart summary rendering =====
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+
+var sum = 0;
+var totalPrice = 0;
+
+if ($.isEmptyObject(cart)) {
+    $('#items').append(`<tr><td colspan="4" class="checkout-empty">Your cart is empty. <a href="/store/">Browse products</a> to add something before checking out.</td></tr>`);
+    $('.checkout-place-order').prop('disabled', true).addClass('disabled');
+} else {
+    for (item in cart) {
+        let name = cart[item][1];
+        let qty = cart[item][0];
+        let itemPrice = cart[item][2];
+        let lineTotal = qty * itemPrice;
+        sum = sum + qty;
+        totalPrice = totalPrice + lineTotal;
+
+        mystr = `<tr>
+                    <td>${name}</td>
+                    <td>Rs. ${itemPrice}</td>
+                    <td>${qty}</td>
+                    <td class="text-right">Rs. ${lineTotal}</td>
+                </tr>`
+        $('#items').append(mystr);
+    }
+}
+
+window.cartSubtotal = totalPrice;
+document.getElementById('cart').innerHTML = sum;
+document.getElementById('subtotalDisplay').innerHTML = 'Rs. ' + totalPrice;
+recalcTotal();
+$('#itemsJson').val(JSON.stringify(cart));
+</script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends 'store/basic.html' %}
+
+{% block title%} Search Results - Kinmel{% endblock %}
+
+{% block css %}
+.product-card-minimal {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--border-color);
+}
+.product-card-minimal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+}
+.product-image-wrapper {
+    background-color: var(--bg-card);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    padding: 20px;
+}
+.product-image-minimal {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-card-minimal:hover .product-image-minimal {
+    transform: scale(1.05);
+}
+{% endblock %}
+
+{% block body %}
+{% load static %}
+<div class="container mb-5 mt-5 pt-3">
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+        <h2 class="fw-bold mb-0 text-dark display-6" style="letter-spacing: -1px;">Search Results</h2>
+    </div>
+    
+    {% if msg %}
+    <div class="alert alert-light border-0 shadow-sm rounded-4 py-5 text-center mt-4 bg-white">
+        <i class="fa-solid fa-magnifying-glass fs-1 text-muted mb-4 opacity-25" style="font-size: 3rem;"></i>
+        <h4 class="alert-heading fw-bold text-dark mb-3">No results found</h4>
+        <p class="mb-4 text-muted fs-5">{{msg}}</p>
+        <a href="/store/" class="btn btn-primary-custom rounded-pill px-5 fw-bold">Back to Store</a>
+    </div>
+    {% else %}
+    
+    {% for product_list, range, nSlides in allProds %}
+    <div class="mb-5 pb-4">
+        <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
+            <h3 class="fw-bold mb-0 text-dark">{{product_list.0.category}}</h3>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for item in product_list %}
+                {% include 'store/partials/product_card.html' with product=item %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    updateCart(cart);
+}
+
+$('.divpr').on('click', 'button.cart', function(){
+    var idstr = this.id.toString();
+    if (cart[idstr] != undefined) {
+        cart[idstr][0] = cart[idstr][0] + 1;
+    } else {
+        var qty = 1;
+        var name = document.getElementById('name'+idstr).innerHTML;
+        var price = document.getElementById('price'+idstr).innerHTML;
+        cart[idstr] = [qty, name, parseInt(price)];
+    }
+    updateCart(cart);
+});
+
+// Initial Popover setup
+updatePopover(cart);
+
+function updatePopover(cart) {
+    var popStr = "<div class='p-3'><h6 class='fw-bold border-bottom pb-2 mb-3'>Your Bag</h6><div class='mb-3'>";
+    var i = 1;
+    for (var item in cart) {
+        if(document.getElementById('name' + item)) {
+            popStr += "<div class='d-flex justify-content-between align-items-center text-muted small mb-3'>";
+            popStr += "<span class='text-dark fw-medium'>" + document.getElementById('name' + item).innerHTML.slice(0, 22) + "...</span>";
+            popStr += "<span class='badge bg-light text-dark border'>Qty: " + cart[item][0] + "</span>";
+            popStr += "</div>";
+            i = i + 1;
+        }
+    }
+    if(i === 1) {
+        popStr += "<p class='text-muted small text-center my-4'>Your bag is empty.</p>";
+    }
+    popStr += "</div><div class='d-grid gap-2'>";
+    popStr += "<a href='/store/checkout/' class='btn btn-primary-custom btn-sm rounded-pill fw-medium'>Checkout</a>";
+    popStr += "<button class='btn btn-outline-minimal btn-sm rounded-pill text-danger fw-medium' onclick='clearCart()' id='clearCart'>Empty Bag</button>";
+    popStr += "</div></div>";
+    
+    var popcartEl = document.getElementById('popcart');
+    if (popcartEl) {
+        popcartEl.setAttribute('data-bs-content', popStr);
+        
+        var popInstance = bootstrap.Popover.getInstance(popcartEl);
+        if(popInstance) {
+            popInstance.dispose();
+        }
+        new bootstrap.Popover(popcartEl, {html: true, sanitize: false});
+    }
+}
+
+function clearCart() {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    for (var item in cart) {
+        if(document.getElementById('div' + item)) {
+            document.getElementById('div' + item).innerHTML = '<button id="' + item + '" class="btn btn-outline-minimal cart w-100 fw-medium">Add to Bag</button>';
+        }
+    }
+    localStorage.clear();
+    cart = {};
+    updateCart(cart);
+}
+
+function updateCart(cart) {
+    var sum = 0;
+    for (var item in cart) {
+        sum = sum + cart[item][0];
+        if(document.getElementById('div' + item)) {
+            document.getElementById('div' + item).innerHTML = `
+                <div class="d-flex align-items-center justify-content-between bg-light rounded-pill p-1 w-100 border">
+                    <button id='minus${item}' class='btn btn-sm btn-light rounded-circle text-dark minus' style='width:28px;height:28px;padding:0;'>-</button>
+                    <span id='val${item}' class='fw-medium small px-2'>${cart[item][0]}</span>
+                    <button id='plus${item}' class='btn btn-sm btn-light rounded-circle text-dark plus' style='width:28px;height:28px;padding:0;'>+</button>
+                </div>
+            `;
+        }
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    if(document.getElementById('cart')) {
+        document.getElementById('cart').innerHTML = sum;
+    }
+    updatePopover(cart);
+}
+
+$('.divpr').on("click", "button.minus", function() {
+    var a = this.id.slice(7, );
+    cart['pr' + a][0] = cart['pr' + a][0] - 1;
+    cart['pr' + a][0] = Math.max(0, cart['pr' + a][0]);
+    if (cart['pr' + a][0] == 0){
+        if(document.getElementById('divpr' + a)) {
+            document.getElementById('divpr' + a).innerHTML = '<button id="pr'+a+'" class="btn btn-outline-minimal cart w-100 fw-medium">Add to Bag</button>';
+        }
+        delete cart['pr'+a];
+    }
+    else{
+        if(document.getElementById('valpr' + a)) {
+            document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+        }
+    }
+    updateCart(cart);
+});
+
+$('.divpr').on("click", "button.plus", function() {
+    var a = this.id.slice(6, );
+    cart['pr' + a][0] = cart['pr' + a][0] + 1;
+    if(document.getElementById('valpr' + a)) {
+        document.getElementById('valpr' + a).innerHTML = cart['pr' + a][0];
+    }
+    updateCart(cart);
+});
+
+$(document).on('click', '.wishlist-btn', function(e) {
+    e.preventDefault();
+    var productId = $(this).data('product-id');
+    var button = $(this);
+    var icon = button.find('i');
+
+    $.ajax({
+        url: "/store/wishlist/toggle/" + productId + "/",
+        method: "GET",
+        success: function(data) {
+            if (data.status === 'login_required') {
+                alert("Please log in to manage your wishlist items!");
+                window.location.href = "/accounts/login/";
+            } else if (data.status === 'added') {
+                icon.removeClass('fa-regular').addClass('fa-solid text-danger');
+            } else if (data.status === 'removed') {
+                icon.removeClass('fa-solid text-danger').addClass('fa-regular');
+            } else {
+                alert("An error occurred. Please try again.");
+            }
+        },
+        error: function() {
+            alert("Could not process your wishlist request at this time.");
+        }
+    });
+});
+</script>
+{% endblock %}

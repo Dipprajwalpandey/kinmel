@@ -1,0 +1,12 @@
+{% extends 'store/basic.html' %}
+{% block title %}Logged Out - Kinmel{% endblock %}
+
+{% block body %}
+<div class="container my-5 text-center">
+    <div class="card mx-auto p-4 shadow-sm" style="max-width: 500px;">
+        <h3 class="text-success mb-3">You've been successfully logged out</h3>
+        <p class="text-muted">Thank you for shopping with us today!</p>
+        <a href="{% url 'login' %}" class="btn btn-primary mt-3">Login again</a>
+    </div>
+</div>
+{% endblock %}

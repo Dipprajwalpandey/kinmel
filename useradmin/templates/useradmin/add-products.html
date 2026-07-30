@@ -1,0 +1,155 @@
+{% extends 'useradmin/dashboard_base.html' %}
+
+{% block title %}Add Product - Dashboard{% endblock %}
+
+{% block dash_content %}
+<div class="dash-header">
+    <div>
+        <h2 class="dash-title">Add New Inventory</h2>
+        <p class="dash-subtitle">List a new product for your store. Fields marked required must be filled before publishing.</p>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="dash-alert {% if message.tags == 'error' %}dash-alert-error{% else %}dash-alert-success{% endif %}">
+            <span class="dash-alert-icon">{% if message.tags == 'error' %}&#33;{% else %}&#10003;{% endif %}</span> {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" id="addProductForm">
+    {% csrf_token %}
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <h3>Basic Information</h3>
+            <p>The essentials shoppers will see first.</p>
+        </div>
+        <div class="dash-card-body">
+            <div class="form-group mb-3">
+                <label>Product Title <span class="req">*</span></label>
+                <input type="text" name="title" class="form-control" placeholder="e.g. 3Ltr Aluminium Classic IB Pressure Cooker" value="{{ old.title|default:'' }}" required>
+            </div>
+
+            <div class="form-group mb-0">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4" placeholder="Describe the product's key features, materials, and what makes it worth buying.">{{ old.description|default:'' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <h3>Pricing &amp; Category</h3>
+            <p>Helps customers find and filter your product.</p>
+        </div>
+        <div class="dash-card-body">
+            <div class="row">
+                <div class="col-md-3 form-group mb-md-0 mb-3">
+                    <label>Price (Rs.) <span class="req">*</span></label>
+                    <input type="number" name="price" class="form-control" placeholder="0.00" value="{{ old.price|default:'' }}" min="0.01" step="0.01" required>
+                </div>
+                <div class="col-md-3 form-group mb-md-0 mb-3">
+                    <label>Brand <span class="req">*</span></label>
+                    <input type="text" name="brand" class="form-control" placeholder="e.g. Samsung" value="{{ old.brand|default:'' }}" required>
+                </div>
+                <div class="col-md-3 form-group mb-md-0 mb-3">
+                    <label>Category <span class="req">*</span></label>
+                    <input type="text" name="category" class="form-control" placeholder="e.g. Electronics" value="{{ old.category|default:'' }}" required>
+                </div>
+                <div class="col-md-3 form-group mb-0">
+                    <label>Subcategory</label>
+                    <input type="text" name="subcategory" class="form-control" placeholder="e.g. Kitchen Appliances" value="{{ old.subcategory|default:'' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-header">
+            <h3>Product Image</h3>
+            <p>A clear photo increases the chance of a sale.</p>
+        </div>
+        <div class="dash-card-body">
+            <label class="dash-upload" id="uploadZone">
+                <input type="file" name="product_image" id="productImageInput" accept="image/*" hidden>
+                <div class="dash-upload-empty" id="uploadEmpty">
+                    <div class="dash-upload-icon">&#8593;</div>
+                    <div class="dash-upload-text">Click to choose a file, or drag one here</div>
+                    <div class="dash-upload-hint">PNG or JPG, up to 5MB</div>
+                </div>
+                <div class="dash-upload-preview" id="uploadPreview" style="display:none;">
+                    <img id="previewImg" src="" alt="Preview">
+                    <div class="dash-upload-filename" id="previewFilename"></div>
+                    <button type="button" class="dash-upload-remove" id="removeImage">Remove</button>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="dash-actions">
+        <button type="submit" class="btn btn-primary dash-publish">Publish Product</button>
+        <span class="dash-actions-hint">Your product will be live immediately after publishing.</span>
+    </div>
+</form>
+
+<script>
+(function() {
+    var input = document.getElementById('productImageInput');
+    var zone = document.getElementById('uploadZone');
+    var empty = document.getElementById('uploadEmpty');
+    var preview = document.getElementById('uploadPreview');
+    var previewImg = document.getElementById('previewImg');
+    var previewFilename = document.getElementById('previewFilename');
+    var removeBtn = document.getElementById('removeImage');
+
+    function showPreview(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewFilename.textContent = file.name;
+            empty.style.display = 'none';
+            preview.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    input.addEventListener('change', function() {
+        if (input.files && input.files[0]) {
+            showPreview(input.files[0]);
+        }
+    });
+
+    removeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        input.value = '';
+        empty.style.display = 'flex';
+        preview.style.display = 'none';
+    });
+
+    ['dragover', 'dragenter'].forEach(function(evt) {
+        zone.addEventListener(evt, function(e) {
+            e.preventDefault();
+            zone.classList.add('drag-active');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(function(evt) {
+        zone.addEventListener(evt, function(e) {
+            e.preventDefault();
+            zone.classList.remove('drag-active');
+        });
+    });
+
+    zone.addEventListener('drop', function(e) {
+        var files = e.dataTransfer.files;
+        if (files && files[0]) {
+            input.files = files;
+            showPreview(files[0]);
+        }
+    });
+})();
+</script>
+{% endblock %}

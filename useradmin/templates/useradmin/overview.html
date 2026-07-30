@@ -1,0 +1,75 @@
+{% extends 'useradmin/dashboard_base.html' %}
+{% block title %} Overview - Kinmel{% endblock %}
+{% block dash_content %}
+<div class="dash-header">
+    <h2 class="dash-title">Overview</h2>
+    <p class="dash-subtitle">A quick snapshot of your store's activity.</p>
+</div>
+
+<!-- Stat cards -->
+<div class="row report-stats mb-2">
+    <div class="col-6 col-md-4 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">Total revenue</div>
+            <div class="stat-value">Rs. {{ total_revenue }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">Total orders</div>
+            <div class="stat-value">{{ total_orders }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 mb-3">
+        <div class="stat-card">
+            <div class="stat-label">Products listed</div>
+            <div class="stat-value">{{ total_products }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent orders -->
+<div class="dash-card">
+    <div class="dash-card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h3>Recent orders</h3>
+            <p>The last 5 orders placed</p>
+        </div>
+        <a href="{% url 'useradmin_orders' %}" class="btn btn-secondary" style="font-size: 0.82rem; padding: 0.4rem 0.9rem;">View all</a>
+    </div>
+    <div class="dash-card-body" style="padding: 0;">
+        {% if recent_orders %}
+        <div style="overflow-x: auto;">
+            <table class="table" style="margin-bottom: 0;">
+                <thead>
+                    <tr>
+                        <th style="padding: 1rem 1.4rem;">Order ID</th>
+                        <th style="padding: 1rem 1.4rem;">Customer</th>
+                        <th style="padding: 1rem 1.4rem;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td style="padding: 1rem 1.4rem;">#{{ order.order_id }}</td>
+                        <td style="padding: 1rem 1.4rem;">{{ order.name }}</td>
+                        <td style="padding: 1rem 1.4rem; font-weight: 600;">Rs. {{ order.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding: 2.5rem 1rem; text-align: center; color: var(--muted);">
+            No orders yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick actions -->
+<div class="dash-actions">
+    <a href="{% url 'add_products' %}" class="btn btn-primary dash-publish">Add a product</a>
+    <a href="{% url 'reports' %}" class="btn btn-secondary dash-publish">View reports</a>
+</div>
+{% endblock %}

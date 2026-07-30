@@ -1,0 +1,45 @@
+{% extends 'store/basic.html' %}
+
+{% block title %}{{ category_name }} - Kinmel{% endblock %}
+
+{% block body %}
+<div class="container my-5 pt-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-2 small fw-medium">
+                <li class="breadcrumb-item"><a href="{% url 'StoreHome' %}" class="text-muted text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">{{ category_name }}</li>
+              </ol>
+            </nav>
+            <h2 class="fw-bold mb-0 text-dark display-6 text-capitalize" style="letter-spacing: -1px;">{{ category_name }}</h2>
+            <p class="text-muted mt-2 mb-0">Explore our premium collection of {{ category_name|lower }}.</p>
+        </div>
+        <div class="d-none d-md-block">
+            <select class="form-select border-light-subtle rounded-pill bg-light" aria-label="Sort products">
+              <option selected>Sort by: Recommended</option>
+              <option value="1">Price: Low to High</option>
+              <option value="2">Price: High to Low</option>
+              <option value="3">Newest Arrivals</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    {% if products %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+        {% for item in products %}
+            {% include 'store/partials/product_card.html' with product=item %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-light rounded-4 mb-5">
+        <i class="fa-solid fa-ghost fs-1 text-muted opacity-25 mb-3"></i>
+        <h5 class="fw-bold text-dark">No products found</h5>
+        <p class="text-muted">We couldn't find any items in this category.</p>
+        <a href="{% url 'StoreHome' %}" class="btn btn-primary-custom rounded-pill mt-3">Back to Home</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

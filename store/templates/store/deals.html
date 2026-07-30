@@ -1,0 +1,31 @@
+{% extends 'store/basic.html' %}
+
+{% block title %}Deals & Offers - Kinmel{% endblock %}
+
+{% block body %}
+<div class="container my-5 pt-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+        <div>
+            <span class="badge bg-danger rounded-pill px-3 py-2 mb-2 fw-bold shadow-sm"><i class="fa-solid fa-fire me-1"></i> Hot Deals</span>
+            <h2 class="fw-bold mb-0 text-dark display-6" style="letter-spacing: -1px;">Today's Top Deals</h2>
+            <p class="text-muted mt-2 mb-0">Epic savings on premium electronics. Limited time only.</p>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    {% if products %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+        {% for item in products %}
+            {% include 'store/partials/product_card.html' with product=item %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-light rounded-4 mb-5">
+        <i class="fa-solid fa-tags fs-1 text-muted opacity-25 mb-3"></i>
+        <h5 class="fw-bold text-dark">No deals at the moment</h5>
+        <p class="text-muted">Check back later for exciting offers!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

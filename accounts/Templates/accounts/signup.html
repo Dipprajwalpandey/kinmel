@@ -1,0 +1,54 @@
+{% extends 'store/basic.html' %}
+{% block title %} Sign Up - Kinmel{% endblock %}
+{% block body %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="card border-0 shadow rounded-4 p-5" style="max-width: 450px; width: 100%;">
+        <div class="text-center mb-4">
+            <i class="fa-brands fa-kickstarter text-dark mb-3" style="font-size: 3rem;"></i>
+            <h3 class="fw-bold text-dark display-6" style="letter-spacing: -1px;">Create account</h3>
+            <p class="text-muted mb-0">Sign up to shop and track your orders.</p>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger rounded-3 small">
+            {% for error in form.non_field_errors %}
+            <p class="mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+                <input type="text" name="username" id="id_username" class="form-control rounded-3 border-light-subtle bg-light" placeholder="Username" required autofocus>
+                <label for="id_username" class="text-muted">Username</label>
+                {% if form.username.errors %}
+                <div class="text-danger small mt-1"><i class="fa-solid fa-circle-xmark me-1"></i>{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" name="password1" id="id_password1" class="form-control rounded-3 border-light-subtle bg-light" placeholder="Password" required>
+                <label for="id_password1" class="text-muted">Password</label>
+                {% if form.password1.errors %}
+                <div class="text-danger small mt-1"><i class="fa-solid fa-circle-xmark me-1"></i>{{ form.password1.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="password" name="password2" id="id_password2" class="form-control rounded-3 border-light-subtle bg-light" placeholder="Confirm password" required>
+                <label for="id_password2" class="text-muted">Confirm password</label>
+                {% if form.password2.errors %}
+                <div class="text-danger small mt-1"><i class="fa-solid fa-circle-xmark me-1"></i>{{ form.password2.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary-custom w-100 btn-lg rounded-pill fw-bold mb-4 shadow-sm">Sign Up</button>
+        </form>
+
+        <p class="text-center text-muted small mb-0">
+            Already have an account? <a href="{% url 'login' %}" class="fw-bold text-dark text-decoration-none">Log in</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

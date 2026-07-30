@@ -1,0 +1,434 @@
+{% extends 'store/basic.html' %}
+{% block title %} {{product.product_name}} - Kinmel{% endblock %}
+
+{% block css %}
+.pdp-breadcrumb {
+    font-size: 0.85rem;
+    padding: 0.9rem 1.25rem;
+    background: var(--bg-card);
+    border-radius: 12px;
+}
+.pdp-breadcrumb .breadcrumb {
+    margin-bottom: 0;
+}
+.pdp-breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.pdp-breadcrumb a:hover {
+    color: var(--primary);
+}
+
+.product-image-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 48px;
+    text-align: center;
+    transition: box-shadow 0.25s ease;
+}
+.product-image-container:hover {
+    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+.product-image-container img {
+    max-height: 400px;
+    object-fit: contain;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-image-container:hover img {
+    transform: scale(1.05);
+}
+.pdp-wishlist-btn {
+    width: 46px;
+    height: 46px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pdp-wishlist-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+}
+
+.trust-badge {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 18px 12px;
+    text-align: center;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.trust-badge:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+.trust-icon {
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+.trust-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.pdp-info-panel {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem 2.25rem;
+}
+.pdp-eyebrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+.pdp-brand-eyebrow {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+.pdp-subcategory-badge {
+    background: var(--brand-tint, #e7f0ed);
+    color: var(--brand-dark, #154d40);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+}
+
+.pdp-title {
+    font-size: clamp(1.65rem, 3.2vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+    margin-bottom: 0.9rem;
+    line-height: 1.15;
+}
+
+.pdp-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.4rem;
+}
+.pdp-rating-link {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    border-bottom: 1px dashed var(--border-color);
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+.pdp-rating-link:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pdp-price-block {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.4rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.pdp-price-current {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+.pdp-price-old {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+.pdp-save-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #fdeceb;
+    color: #c0392b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+}
+
+.pdp-stock-pill {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+}
+
+.pdp-overview-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+.pdp-overview-text {
+    color: var(--text-main);
+    line-height: 1.7;
+    font-size: 0.97rem;
+}
+
+.pdp-actions {
+    margin-top: 1.75rem;
+}
+.pdp-buynow {
+    font-size: 1.05rem;
+    padding: 1rem;
+    letter-spacing: -0.01em;
+    box-shadow: 0 4px 14px rgba(21, 77, 64, 0.18);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+.pdp-buynow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(21, 77, 64, 0.24);
+}
+.pdp-addcart {
+    padding: 1rem;
+    font-size: 1rem;
+    transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+.pdp-addcart:hover {
+    transform: translateY(-2px);
+}
+
+.pdp-secure-note {
+    margin-top: 1.5rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.bump {
+    animation: bump 0.3s ease;
+}
+@keyframes bump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 767px) {
+    .product-image-container {
+        padding: 28px;
+    }
+    .pdp-info-panel {
+        padding: 1.5rem 1.4rem;
+        margin-top: 1.25rem;
+    }
+    .pdp-price-current {
+        font-size: 1.7rem;
+    }
+}
+{% endblock %}
+
+{% block body %}
+{% load store_extras %}
+<div class="container my-5 pt-4">
+    <nav aria-label="breadcrumb" class="mb-4 pdp-breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/store/"><i class="fa-solid fa-house-chimney me-1"></i>Home</a></li>
+        <li class="breadcrumb-item"><a href="/store/search/?search={{product.category}}">{{product.category}}</a></li>
+        <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">{{product.product_name}}</li>
+      </ol>
+    </nav>
+
+    <div class="row gx-5">
+        <div class="col-md-6 mb-5 mb-md-0">
+            <div class="product-image-container mb-4 position-relative">
+                <!-- Wishlist Button on Image -->
+                <button class="btn btn-light rounded-circle shadow-sm wishlist-btn pdp-wishlist-btn border-0 text-danger position-absolute top-0 end-0 m-4 d-flex align-items-center justify-content-center" data-product-id="{{product.id}}" title="Add to Wishlist" style="z-index: 10;">
+                    <i class="fa-regular fa-heart fs-5"></i>
+                </button>
+                <img src="/media/{{product.image}}" class="img-fluid" alt="{{product.product_name}}">
+            </div>
+
+            <div class="row g-3">
+                <div class="col-4">
+                    <div class="trust-badge">
+                        <div class="trust-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                        <div class="trust-label">Fast Delivery</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="trust-badge">
+                        <div class="trust-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="trust-label">Secure Checkout</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="trust-badge">
+                        <div class="trust-icon"><i class="fa-solid fa-medal"></i></div>
+                        <div class="trust-label">Brand Warranty</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="pdp-info-panel">
+                <div class="pdp-eyebrow-row">
+                    <span class="pdp-brand-eyebrow">{{product.brand|default:"KINMEL"}}</span>
+                    <span class="pdp-subcategory-badge">{{product.subcategory}}</span>
+                </div>
+
+                <h1 id="namepr{{product.id}}" class="pdp-title">{{product.product_name}}</h1>
+
+                <!-- Real Ratings (aggregated from Review model) -->
+                <div class="pdp-rating-row">
+                    <div class="text-warning fs-6">
+                        {% for icon in product.avg_rating|star_icons %}
+                            {% if icon == 'full' %}
+                                <i class="fa-solid fa-star"></i>
+                            {% elif icon == 'half' %}
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <a href="#" class="pdp-rating-link">
+                        {% if product.review_count %}{{product.avg_rating|floatformat:1}} ({{product.review_count}} Customer Reviews){% else %}No reviews yet{% endif %}
+                    </a>
+                </div>
+
+                <div class="pdp-price-block">
+                    <span class="pdp-price-current">Rs. <span id="pricepr{{product.id}}" data-value="{{product.price}}">0</span></span>
+                    {% if product.id|divisibleby:2 %}
+                    <span class="pdp-price-old">Rs. {{product.price|add:"2500"}}</span>
+                    <span class="pdp-save-badge"><i class="fa-solid fa-tag me-1"></i>Save Rs. 2500</span>
+                    {% endif %}
+                </div>
+
+                <span class="pdp-stock-pill d-inline-flex align-items-center text-success bg-success bg-opacity-10">
+                    <i class="fa-solid fa-check-circle me-2"></i> In Stock & Ready to Ship
+                </span>
+
+                <div class="mb-2">
+                    <h5 class="pdp-overview-label">Product Overview</h5>
+                    <p class="pdp-overview-text">{{product.description}}</p>
+                </div>
+
+                <div class="d-flex flex-column gap-3 pdp-actions">
+                    <button id="buynow{{product.id}}" class="btn btn-primary-custom rounded-pill fw-bold pdp-buynow">Buy It Now</button>
+                    <span id="divpr{{product.id}}" class="divpr w-100">
+                        <button id="pr{{product.id}}" class="btn btn-outline-minimal w-100 fw-bold cart pdp-addcart">
+                            <i class="fa-solid fa-bag-shopping me-2"></i> Add to Cart
+                        </button>
+                    </span>
+                </div>
+
+                <p class="pdp-secure-note mb-0"><i class="fa-solid fa-shield-check me-1"></i> Safe & Secure Payments via eSewa</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    if(document.getElementById('cart')) {
+        document.getElementById('cart').innerHTML = getCartCount(cart);
+    }
+}
+
+function getCartCount(cart) {
+    var sum = 0;
+    for (var item in cart) {
+        sum = sum + cart[item][0];
+    }
+    return sum;
+}
+
+function addToCart(idstr) {
+    if (cart[idstr] != undefined) {
+        cart[idstr][0] = cart[idstr][0] + 1;
+    } else {
+        var name = document.getElementById('name' + idstr).innerHTML;
+        var price = document.getElementById('price' + idstr).getAttribute('data-value');
+        cart[idstr] = [1, name, parseInt(price)];
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    var cartBadge = document.getElementById('cart');
+    if(cartBadge) {
+        cartBadge.innerHTML = getCartCount(cart);
+        cartBadge.classList.remove('bump');
+        void cartBadge.offsetWidth;
+        cartBadge.classList.add('bump');
+    }
+}
+
+$('.cart').click(function () {
+    var idstr = this.id.toString();
+    addToCart(idstr);
+
+    var $btn = $(this);
+    var originalHtml = $btn.html();
+    $btn.prop('disabled', true).removeClass('btn-light text-secondary').addClass('btn-success text-white');
+    $btn.html('<i class="fa-solid fa-check me-2"></i> Added');
+    setTimeout(function () {
+        $btn.prop('disabled', false).removeClass('btn-success text-white').addClass('btn-light text-secondary').html(originalHtml);
+    }, 1200);
+});
+
+$('#buynow{{product.id}}').click(function () {
+    var idstr = 'pr{{product.id}}';
+    addToCart(idstr);
+    window.location = "{% url 'Checkout' %}";
+});
+
+// Update popcart data for BS5
+var popcartEl = document.getElementById("popcart");
+if(popcartEl) {
+    popcartEl.setAttribute('data-bs-content', '<h5>Cart updated!</h5><div class="mt-2"><a href="/store/checkout/" class="btn btn-sm btn-primary-custom rounded-pill">View Cart</a></div>');
+    var popInstance = bootstrap.Popover.getInstance(popcartEl);
+    if(popInstance) popInstance.dispose();
+    new bootstrap.Popover(popcartEl, {html: true});
+}
+
+// ===== Price count-up animation =====
+(function () {
+    var priceEl = document.getElementById('pricepr{{product.id}}');
+    if (!priceEl) return;
+    var target = parseInt(priceEl.dataset.value, 10) || 0;
+    var duration = 900;
+    var start = null;
+
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function step(timestamp) {
+        if (!start) start = timestamp;
+        var progress = Math.min((timestamp - start) / duration, 1);
+        var eased = easeOutCubic(progress);
+        priceEl.textContent = Math.round(eased * target);
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            priceEl.textContent = target;
+        }
+    }
+    requestAnimationFrame(step);
+})();
+</script>
+{% endblock %}
