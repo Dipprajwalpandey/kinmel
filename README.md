@@ -1,4 +1,4 @@
-\# Kinmel — Modern Django eCommerce Marketplace
+Kinmel — Modern Django eCommerce Marketplace
 
 
 
@@ -10,155 +10,94 @@ The project emphasizes production-quality UI/UX, reusable frontend components, a
 
 
 
-\---
+ Features
 
 
 
-\## Features
+ Customer Experience
+
+- User authentication (sign up, log in, profile management)
+- Product browsing by category and brand
+- Product search
+- Wishlist
+- Shopping cart with quantity management
+- Checkout flow
+- Order tracking
+- Product reviews and ratings
+- Fully responsive design
 
 
+ Seller Dashboard
+- Dashboard overview
+- Add and manage products
+- Product validation
+- Order management
+- Sales reports
 
-\### Customer Experience
+ Product Experience
+- Dynamic product ratings
+- Customer review system
+- Dedicated product detail pages
+- Brand-based product organization
+- Category navigation
+- Horizontal product carousels
 
-\- User authentication (sign up, log in, profile management)
+ UI / UX
+- Modern, consistent design system
+- Clean typography (Inter + Fraunces)
+- Interactive animations and smooth transitions
+- Mobile-first responsive layout
+- Refined navigation and information hierarchy
 
-\- Product browsing by category and brand
-
-\- Product search
-
-\- Wishlist
-
-\- Shopping cart with quantity management
-
-\- Checkout flow
-
-\- Order tracking
-
-\- Product reviews and ratings
-
-\- Fully responsive design
-
-
-
-\### Seller Dashboard
-
-\- Dashboard overview
-
-\- Add and manage products
-
-\- Product validation
-
-\- Order management
-
-\- Sales reports
-
-
-
-\### Product Experience
-
-\- Dynamic product ratings
-
-\- Customer review system
-
-\- Dedicated product detail pages
-
-\- Brand-based product organization
-
-\- Category navigation
-
-\- Horizontal product carousels
-
-
-
-\### UI / UX
-
-\- Modern, consistent design system
-
-\- Clean typography (Inter + Fraunces)
-
-\- Interactive animations and smooth transitions
-
-\- Mobile-first responsive layout
-
-\- Refined navigation and information hierarchy
-
-
-
-\---
-
-
-
-\## Tech Stack
-
-
-
+ Tech Stack
 | Layer | Technology |
 
-| Backend | Python, Django |
+ Backend - Python, Django 
 
-| Frontend | HTML5, CSS3, Bootstrap 5, JavaScript, jQuery |
+ Frontend - HTML5, CSS3, Bootstrap 5, JavaScript, jQuery 
 
-| Database | SQLite |
+ Database - SQLite 
 
-| Icons \& Fonts | Font Awesome, Google Fonts (Inter \& Fraunces) |
-
-
-
-\---
+ Icons & Fonts - Font Awesome, Google Fonts (Inter & Fraunces)
 
 
+ Project Structure
 
-\## Project Structure
+accounts/            authentication & user profiles
 
+blog/                blog app
 
+ecommercewebsite/     Django project settings
 
-```
+store/                core marketplace app
 
-accounts/           # authentication \& user profiles
+useradmin/            seller/admin functionality
 
-blog/                # blog app
+templates/            shared templates
 
-ecommercewebsite/    # Django project settings
-
-store/               # core marketplace app
-
-useradmin/           # seller/admin functionality
-
-templates/           # shared templates
-
-media/               # uploaded media
+media/                uploaded media
 
 manage.py
 
 requirements.txt
 
-```
+
+
+\ Installation
 
 
 
-\---
+\*1. Clone the repository\*
 
-
-
-\## Installation
-
-
-
-\*\*1. Clone the repository\*\*
-
-```bash
+bash
 
 git clone https://github.com/Dipprajwalpandey/kinmel.git
 
 cd Kinmel
 
-```
+2. Create and activate a virtual environment
 
-
-
-\*\*2. Create and activate a virtual environment\*\*
-
-```bash
+bash
 
 python -m venv .venv
 
@@ -212,21 +151,7 @@ Then open \*\*http://127.0.0.1:8000/\*\* in your browser.
 
 
 
-\---
-
-
-
-\## Screenshots
-
-\_Coming soon.\_
-
-
-
-\---
-
-
-
-\## Roadmap
+\Roadmap
 
 \- PostgreSQL support
 
@@ -248,17 +173,14 @@ Then open \*\*http://127.0.0.1:8000/\*\* in your browser.
 
 
 
-\---
 
 
 
-\## License
+
+\ License
 
 This project is intended for learning, portfolio, and demonstration purposes.
 
-
-
-\---
 
 
 
