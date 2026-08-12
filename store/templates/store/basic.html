@@ -186,8 +186,8 @@
                     {% if user.is_superuser %}
                     <li class="nav-item"><a href="{% url 'add_products' %}" class="nav-link text-dark fw-bold px-3 py-2 fs-sm">Dashboard</a></li>
                     {% endif %}
-                    <li class="nav-item"><a href="/store/about" class="nav-link text-dark fw-bold px-3 py-2 fs-sm">Support</a></li>
-                    <li class="nav-item"><a href="/store/contact" class="nav-link text-dark fw-bold px-3 py-2 fs-sm">Contact</a></li>
+                    <li class="nav-item"><a href="/store/about/" class="nav-link text-dark fw-bold px-3 py-2 fs-sm">Support</a></li>
+                    <li class="nav-item"><a href="/store/contact/" class="nav-link text-dark fw-bold px-3 py-2 fs-sm">Contact</a></li>
                 </ul>
             </div>
         </div>
@@ -222,14 +222,14 @@
             {% endif %}
 
             <div class="list-group list-group-flush mt-2">
-                <a href="/store" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-house me-3 text-muted"></i> Home</a>
-                <a href="/store#shop-by-category" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-list me-3 text-muted"></i> Categories</a>
-                <a href="/store/tracker" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-box-open me-3 text-muted"></i> My Orders</a>
+                <a href="/store/" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-house me-3 text-muted"></i> Home</a>
+                <a href="/store/#shop-by-category" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-list me-3 text-muted"></i> Categories</a>
+                <a href="/store/tracker/" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-box-open me-3 text-muted"></i> My Orders</a>
                 {% if user.is_superuser %}
                 <a href="{% url 'add_products' %}" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-gauge me-3 text-muted"></i> Dashboard</a>
                 {% endif %}
                 <a href="{% url 'profile' %}" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-regular fa-heart me-3 text-muted"></i> Wishlist</a>
-                <a href="/store/contact" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-headset me-3 text-muted"></i> Support</a>
+                <a href="/store/contact/" class="list-group-item list-group-item-action border-0 fw-medium py-3 px-4"><i class="fa-solid fa-headset me-3 text-muted"></i> Support</a>
 
                 {% if user.is_authenticated %}
                 <form action="{% url 'logout' %}" method="post" class="mt-2 border-top">
@@ -250,7 +250,7 @@
         <div class="container">
             <div class="row g-5 mb-5">
                 <div class="col-lg-4 col-md-6">
-                    <a class="navbar-brand d-flex align-items-center gap-2 mb-4 text-white text-decoration-none" href="/store">
+                    <a class="navbar-brand d-flex align-items-center gap-2 mb-4 text-white text-decoration-none" href="/store/">
                         <span class="kinmel-mark" aria-hidden="true">K</span>
                         <span class="fs-4 fw-bold">Kinmel.</span>
                     </a>
@@ -267,7 +267,7 @@
 
                 <div class="col-lg-2 col-md-6">
                     <h5 class="footer-title">Shop</h5>
-                    <a href="/store" class="footer-link">All Products</a>
+                    <a href="/store/" class="footer-link">All Products</a>
                     <a href="#" class="footer-link">New Arrivals</a>
                     <a href="#" class="footer-link">Best Sellers</a>
                     <a href="#" class="footer-link">Offers</a>
@@ -275,9 +275,9 @@
 
                 <div class="col-lg-2 col-md-6">
                     <h5 class="footer-title">Support</h5>
-                    <a href="/store/contact" class="footer-link">Contact Us</a>
-                    <a href="#" class="footer-link">FAQs</a>
-                    <a href="/store/tracker" class="footer-link">Track Order</a>
+                    <a href="/store/contact/" class="footer-link">Contact Us</a>
+                    <a href="/store/about/" class="footer-link">About Us</a>
+                    <a href="/store/tracker/" class="footer-link">Track Order</a>
                     <a href="#" class="footer-link">Returns Policy</a>
                 </div>
 
