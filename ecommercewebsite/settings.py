@@ -29,6 +29,13 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
+# Support for custom domains (e.g., kinmel-render.com)
+CUSTOM_DOMAIN = os.environ.get('CUSTOM_DOMAIN')
+if CUSTOM_DOMAIN:
+    ALLOWED_HOSTS.append(CUSTOM_DOMAIN)
+    # Also allow the www version
+    ALLOWED_HOSTS.append(f"www.{CUSTOM_DOMAIN}")
+
 
 # Application definition
 
