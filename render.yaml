@@ -8,6 +8,7 @@ services:
   - type: web
     name: ecommercewebsite
     env: python
+    plan: free
     buildCommand: "./build.sh"
     startCommand: "gunicorn ecommercewebsite.wsgi:application"
     envVars:
