@@ -155,13 +155,17 @@ def productView(request, myid):
             # submissions on refresh, and to re-fetch fresh aggregates.
             return redirect(request.path)
 
-    product = Product.objects.filter(id=myid).annotate(
+    product_qs = Product.objects.filter(id=myid).annotate(
         avg_rating=Avg('reviews__rating'), review_count=Count('reviews', distinct=True)
     )
+    if not product_qs.exists():
+        from django.http import Http404
+        raise Http404("Product does not exist")
+    
     reviews_list = Review.objects.filter(product_id=myid).order_by('-created_at')[:20]
 
     return render(request, 'store/Productview.html', {
-        'product': product[0],
+        'product': product_qs.first(),
         'reviews_list': reviews_list,
         'review_error': review_error,
     })

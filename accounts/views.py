@@ -53,7 +53,7 @@ def edit_profile_view(request):
         profile.save()
 
         messages.success(request, "Your profile details updated successfully!")
-        return redirect('profile_view')
+        return redirect('profile')
 
     context = {
         'profile': profile,
