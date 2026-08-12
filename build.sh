@@ -7,6 +7,9 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate
 
+# Load initial product data
+python manage.py loaddata store_products.json
+
 # Create a default superuser if it doesn't exist
 python manage.py shell -c "
 from django.contrib.auth.models import User
