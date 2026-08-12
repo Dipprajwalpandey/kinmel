@@ -284,10 +284,13 @@
                 <div class="col-lg-4 col-md-6">
                     <h5 class="footer-title">Stay in the loop</h5>
                     <p class="text-muted mb-3" style="font-size: 0.9rem;">Sign up for exclusive offers, original stories, events and more.</p>
-                    <form class="d-flex mb-3">
-                        <input type="email" class="form-control bg-dark border-secondary text-white me-2 rounded-pill" placeholder="Email address" aria-label="Email address" style="font-size: 0.9rem;">
-                        <button class="btn btn-light rounded-pill fw-bold px-4" type="button">Subscribe</button>
+                    <form class="d-flex mb-3" id="newsletterForm">
+                        <input type="email" class="form-control bg-dark border-secondary text-white me-2 rounded-pill" placeholder="Email address" aria-label="Email address" id="newsletterEmail" required style="font-size: 0.9rem;">
+                        <button class="btn btn-light rounded-pill fw-bold px-4" type="submit">Subscribe</button>
                     </form>
+                    <p class="text-success small mb-3 d-none" id="newsletterSuccess">
+                        <i class="fa-solid fa-check me-1"></i> Thanks! You're on the list.
+                    </p>
                     <div class="d-flex gap-2 align-items-center mt-4">
                         <i class="fa-brands fa-cc-visa text-muted fs-4"></i>
                         <i class="fa-brands fa-cc-mastercard text-muted fs-4"></i>
@@ -373,6 +376,25 @@
         } else {
             window.addEventListener('load', hideLoader);
         }
+    })();
+    </script>
+
+    <!-- Newsletter form: no backend endpoint exists yet, so this validates
+         the email client-side and shows a confirmation message. -->
+    <script>
+    (function () {
+        var form = document.getElementById('newsletterForm');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var emailInput = document.getElementById('newsletterEmail');
+            if (!emailInput.checkValidity()) {
+                emailInput.reportValidity();
+                return;
+            }
+            document.getElementById('newsletterSuccess').classList.remove('d-none');
+            form.classList.add('d-none');
+        });
     })();
     </script>
 

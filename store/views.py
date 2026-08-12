@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from .models import Product, Contact, Orders, OrderUpdate, Wishlist, Review
 from django.db.models import Avg, Count
+from django.urls import reverse
 from math import ceil
 import json
 import uuid
@@ -123,10 +124,47 @@ def tracker(request):
 
 
 def productView(request, myid):
+    review_error = None
+
+    if request.method == "POST":
+        # Submitting a review requires being logged in
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('login')}?next={request.path}")
+
+        rating_raw = request.POST.get('rating', '')
+        comment = (request.POST.get('comment') or '').strip()
+
+        try:
+            rating = int(rating_raw)
+            if rating < 1 or rating > 5:
+                raise ValueError
+        except (TypeError, ValueError):
+            rating = None
+            review_error = "Please select a rating between 1 and 5 stars."
+
+        if rating is not None:
+            product_obj = Product.objects.get(id=myid)
+            Review.objects.create(
+                product=product_obj,
+                user=request.user,
+                reviewer_name=request.user.username,
+                rating=rating,
+                comment=comment,
+            )
+            # Redirect after a successful POST to avoid duplicate
+            # submissions on refresh, and to re-fetch fresh aggregates.
+            return redirect(request.path)
+
     product = Product.objects.filter(id=myid).annotate(
         avg_rating=Avg('reviews__rating'), review_count=Count('reviews', distinct=True)
     )
-    return render(request, 'store/Productview.html', {'product': product[0]})
+    reviews_list = Review.objects.filter(product_id=myid).order_by('-created_at')[:20]
+
+    return render(request, 'store/Productview.html', {
+        'product': product[0],
+        'reviews_list': reviews_list,
+        'review_error': review_error,
+    })
 
 
 def checkout(request):

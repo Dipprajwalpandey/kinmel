@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from django import template
 
 register = template.Library()
@@ -18,3 +19,12 @@ def star_icons(rating):
     empty = 5 - full - half
 
     return (['full'] * full) + (['half'] * half) + (['empty'] * empty)
+
+
+@register.filter
+def is_new(pub_date):
+    """True if the product was published within the last 14 days.
+    Uses the real pub_date field — no fabricated data."""
+    if not pub_date:
+        return False
+    return (date.today() - pub_date).days <= 14

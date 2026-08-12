@@ -93,6 +93,14 @@
     letter-spacing: 0.08em;
     color: var(--text-muted);
 }
+.pdp-new-badge {
+    background: #e7f0ff;
+    color: #1d5fd6;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+}
 .pdp-subcategory-badge {
     background: var(--brand-tint, #e7f0ed);
     color: var(--brand-dark, #154d40);
@@ -143,29 +151,6 @@
     font-weight: 700;
     color: var(--text-main);
     letter-spacing: -0.02em;
-}
-.pdp-price-old {
-    font-size: 1rem;
-    color: var(--text-muted);
-    text-decoration: line-through;
-}
-.pdp-save-badge {
-    display: inline-flex;
-    align-items: center;
-    background: #fdeceb;
-    color: #c0392b;
-    font-size: 0.78rem;
-    font-weight: 700;
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-}
-
-.pdp-stock-pill {
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 0.55rem 1.1rem;
-    border-radius: 999px;
-    margin-bottom: 1.5rem;
 }
 
 .pdp-overview-label {
@@ -221,6 +206,99 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
+}
+
+/* ===== Reviews section ===== */
+.pdp-reviews-section {
+    margin-top: 3rem;
+}
+.pdp-reviews-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+}
+
+/* Star picker — pure CSS, no JS. Radios are visually reversed via
+   row-reverse so the sibling-selector hover/checked trick works left-to-right. */
+.star-picker {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    font-size: 1.8rem;
+}
+.star-picker input {
+    display: none;
+}
+.star-picker label {
+    color: var(--border-color);
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+.star-picker input:checked ~ label,
+.star-picker label:hover,
+.star-picker label:hover ~ label {
+    color: #f5a623;
+}
+
+.review-form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+}
+.review-form-title {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.review-signin-note {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.review-signin-note a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.review-item {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 0;
+}
+.review-item:last-child {
+    border-bottom: none;
+}
+.review-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+.review-item-name {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.92rem;
+}
+.review-item-date {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+.review-item-stars {
+    color: #f5a623;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+.review-item-comment {
+    color: var(--text-main);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+.pdp-no-reviews {
+    color: var(--text-muted);
+    font-size: 0.92rem;
 }
 
 @media (max-width: 767px) {
@@ -284,7 +362,12 @@
             <div class="pdp-info-panel">
                 <div class="pdp-eyebrow-row">
                     <span class="pdp-brand-eyebrow">{{product.brand|default:"KINMEL"}}</span>
-                    <span class="pdp-subcategory-badge">{{product.subcategory}}</span>
+                    <div class="d-flex gap-2">
+                        {% if product.pub_date|is_new %}
+                        <span class="pdp-new-badge">New</span>
+                        {% endif %}
+                        <span class="pdp-subcategory-badge">{{product.subcategory}}</span>
+                    </div>
                 </div>
 
                 <h1 id="namepr{{product.id}}" class="pdp-title">{{product.product_name}}</h1>
@@ -302,22 +385,14 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-                    <a href="#" class="pdp-rating-link">
+                    <a href="#pdp-reviews" class="pdp-rating-link">
                         {% if product.review_count %}{{product.avg_rating|floatformat:1}} ({{product.review_count}} Customer Reviews){% else %}No reviews yet{% endif %}
                     </a>
                 </div>
 
                 <div class="pdp-price-block">
                     <span class="pdp-price-current">Rs. <span id="pricepr{{product.id}}" data-value="{{product.price}}">0</span></span>
-                    {% if product.id|divisibleby:2 %}
-                    <span class="pdp-price-old">Rs. {{product.price|add:"2500"}}</span>
-                    <span class="pdp-save-badge"><i class="fa-solid fa-tag me-1"></i>Save Rs. 2500</span>
-                    {% endif %}
                 </div>
-
-                <span class="pdp-stock-pill d-inline-flex align-items-center text-success bg-success bg-opacity-10">
-                    <i class="fa-solid fa-check-circle me-2"></i> In Stock & Ready to Ship
-                </span>
 
                 <div class="mb-2">
                     <h5 class="pdp-overview-label">Product Overview</h5>
@@ -336,6 +411,69 @@
                 <p class="pdp-secure-note mb-0"><i class="fa-solid fa-shield-check me-1"></i> Safe & Secure Payments via eSewa</p>
             </div>
         </div>
+    </div>
+
+    <!-- ===== Customer Reviews ===== -->
+    <div class="pdp-reviews-section" id="pdp-reviews">
+        <h3 class="pdp-reviews-heading">Customer Reviews</h3>
+
+        <div class="review-form-card">
+            <h6 class="review-form-title">Write a review</h6>
+
+            {% if review_error %}
+            <div class="alert alert-danger py-2 px-3 small">{{ review_error }}</div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <div class="star-picker">
+                        <input type="radio" name="rating" id="star5-{{product.id}}" value="5"><label for="star5-{{product.id}}"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" name="rating" id="star4-{{product.id}}" value="4"><label for="star4-{{product.id}}"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" name="rating" id="star3-{{product.id}}" value="3"><label for="star3-{{product.id}}"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" name="rating" id="star2-{{product.id}}" value="2"><label for="star2-{{product.id}}"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" name="rating" id="star1-{{product.id}}" value="1"><label for="star1-{{product.id}}"><i class="fa-solid fa-star"></i></label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience with this product (optional)"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary-custom rounded-pill fw-bold px-4">Submit Review</button>
+            </form>
+            {% else %}
+            <p class="review-signin-note mb-0">
+                <a href="{% url 'login' %}?next={{ request.path }}">Sign in</a> to write a review.
+            </p>
+            {% endif %}
+        </div>
+
+        {% if reviews_list %}
+        <div>
+            {% for review in reviews_list %}
+            <div class="review-item">
+                <div class="review-item-header">
+                    <span class="review-item-name">{{ review.reviewer_name }}</span>
+                    <span class="review-item-date">{{ review.created_at|date:"M d, Y" }}</span>
+                </div>
+                <div class="review-item-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            <i class="fa-solid fa-star"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% if review.comment %}
+                <p class="review-item-comment">{{ review.comment }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="pdp-no-reviews">No reviews yet — be the first to share your thoughts.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -430,5 +568,20 @@ if(popcartEl) {
     }
     requestAnimationFrame(step);
 })();
+
+// ===== Star rating picker: allow unselecting by clicking the same star again =====
+document.querySelectorAll('.star-picker').forEach(function (picker) {
+    var active = null;
+    picker.querySelectorAll('input[type="radio"]').forEach(function (input) {
+        input.addEventListener('click', function () {
+            if (active === input) {
+                input.checked = false;
+                active = null;
+            } else {
+                active = input;
+            }
+        });
+    });
+});
 </script>
 {% endblock %}
