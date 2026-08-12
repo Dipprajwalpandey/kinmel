@@ -23,4 +23,4 @@ services:
       - key: RENDER_EXTERNAL_HOSTNAME
         sync: false
       - key: PYTHON_VERSION
-        value: 3.10.13
+        value: 3.12.3
